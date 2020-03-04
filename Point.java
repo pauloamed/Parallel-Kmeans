@@ -3,7 +3,7 @@ import java.lang.Math;
 public class Point{
     // array guardando valores e classe
     // distance to
-    public double coords[];
+    private double coords[];
     private int dim;
 
 
@@ -17,30 +17,10 @@ public class Point{
         coords = new double[dim];
     }
 
-    double[] getCoords(){
-        return coords;
-    }
-
-    public void add(Point p){
-        if(this.dim != p.getDim()){
-
-        }else{
-            for(int i = 0; i < this.coords.length; ++i){
-                coords[i] += p.getCoords()[i];
-            }
-        }
-    }
-
-    Point
-
-    public getDim(){
-        return dim;
-    }
-
     // euclidian distance
     public double distanceTo(Point p){
         double sum = 0.0;
-        for(int i = 0; i < coords.length; ++i){
+        for(int i = 0; i < this.dim; ++i){
             sum += coords[i];
         }
         return Math.sqrt(sum);
@@ -58,5 +38,23 @@ public class Point{
             }
         }
         return closestPoint;
+    }
+
+    public void add(Point p){
+        if(this.dim != p.getDim()){
+            throw new RuntimeException();
+        }else{
+            for(int i = 0; i < this.dim; ++i){
+                coords[i] += p.getCoords()[i];
+            }
+        }
+    }
+
+    public getDim(){
+        return dim;
+    }
+
+    double[] getCoords(){
+        return coords;
     }
 }
