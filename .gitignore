@@ -1,4 +1,5 @@
 .idea/
+target/
 *.jfr
 *.jar
 *.class
