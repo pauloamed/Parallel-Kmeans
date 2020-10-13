@@ -48,6 +48,7 @@ public class CSVReaderStringParser implements CSVReader{
                 String[] parsedLine = line.split(delimiter);
                 int pointPos = Integer.parseInt(parsedLine[0]) - 1;
                 if(pointPos == -1) return;
+                coords[pointPos] = new double[dimPoints];
                 for(int i = 0; i < dimPoints; ++i){
                     coords[pointPos][i] = Double.parseDouble(parsedLine[i + 1]);
                 }
