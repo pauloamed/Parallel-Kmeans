@@ -1,6 +1,5 @@
 package br.ufrn.kmeans;
 
-import br.ufrn.point.ParallelPoint;
 import br.ufrn.point.Point;
 import br.ufrn.point.SequentialPoint;
 

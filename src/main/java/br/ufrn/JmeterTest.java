@@ -18,22 +18,20 @@ public class JmeterTest extends AbstractJavaSamplerClient implements Serializabl
     @Override
     public Arguments getDefaultParameters() {
         Arguments defaultParameters = new Arguments();
-        defaultParameters.addArgument("NumberOfThreads", "1");
         defaultParameters.addArgument("NumberOfIterations", "10");
         defaultParameters.addArgument("K", "3");
-        defaultParameters.addArgument("InputFile", "test.csv");
+        defaultParameters.addArgument("InputFile", "input.csv");
         return defaultParameters;
     }
 
     @Override
     public SampleResult runTest(JavaSamplerContext context) {
         // pull parameters
-        String numberOfThreadsStr = context.getParameter( "NumberOfThreads" );
         String numberOfIterationsStr = context.getParameter( "NumberOfIterations" );
         String KStr = context.getParameter( "K" );
         String inputFile = context.getParameter( "InputFile" );
 
-        int numberOfThreads = Integer.parseInt(numberOfThreadsStr);
+        int numberOfThreads = Runtime.getRuntime().availableProcessors();
         int numberOfIterations = Integer.parseInt(numberOfIterationsStr);
         int K = Integer.parseInt(KStr);
 
@@ -43,7 +41,7 @@ public class JmeterTest extends AbstractJavaSamplerClient implements Serializabl
         try {
             CSVReaderStringBuilder csvReader = new CSVReaderStringBuilder(";");
             double[][] coords;
-            coords = csvReader.readCoords("test.csv", true);
+            coords = csvReader.readCoords(inputFile, true);
 
             SequentialPoint seqPoints[] = new SequentialPoint[coords.length];
             for(int i = 0; i < coords.length; ++i){
@@ -54,6 +52,8 @@ public class JmeterTest extends AbstractJavaSamplerClient implements Serializabl
 
             ParallelKmeans parallelKmeansAlgo = new ParallelKmeans(numberOfThreads);
             parallelKmeansAlgo.run(seqPoints, K, numberOfIterations);
+
+            System.out.println("atirei o pau no gato");
 
             result.sampleEnd(); // stop stopwatch
             result.setSuccessful( true );
