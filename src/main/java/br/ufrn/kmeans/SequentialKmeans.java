@@ -60,7 +60,6 @@ public class SequentialKmeans extends Kmeans{
 
         // runs algo for numIterations steps
         for(int iter = 0; iter < numIterations; iter++){
-            System.out.println("Iteration " + (iter + 1) + " of " + numIterations);
             updatePointsClasses(points); // first update classes
             updateCentroids(points); // then centroids
         }

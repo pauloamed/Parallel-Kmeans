@@ -24,14 +24,14 @@ public class ParallelKmeans extends Kmeans{
     /*
         -- LOOP START --
         BARRIER 0
-        PHASE 1: Workers compute the correspondent class for each point. No shared state here
+        PHASE 0: Workers compute the correspondent class for each point. No shared state here
         BARRIER 1
-        PHASE 2: Main inits aux. structures for PHASE 3.
+        PHASE 1: Main inits aux. structures for PHASE 3.
         BARRIER 2
-        PHASE 3: Workers compute sum of points for each centroid and classCount. Both centroids
+        PHASE 2: Workers compute sum of points for each centroid and classCount. Both centroids
         and classCounts are shared states.
         BARRIER 3
-        PHASE 4: Main compute average for centroids using classCounts and shared states
+        PHASE 3: Main compute average for centroids using classCounts and shared states
         -- LOOP END --
      */
 
@@ -55,7 +55,7 @@ public class ParallelKmeans extends Kmeans{
         }
 
         for(int iter = 0; iter < numIterations; ++iter){
-            System.out.println("Main; Iter: " + iter);
+//            System.out.println("Main; Iter: " + iter);
             barriers[0].await(); // init wait
             // PHASE 0
             // workers updating classes
@@ -63,17 +63,16 @@ public class ParallelKmeans extends Kmeans{
             // PHASE 1
             // array for counting occourences for each of the classes
             classCount= new AtomicInteger[centroids.length];
-            // PHASE 2
             // reseting the centroids, init for next phase
             for(int i = 0; i < centroids.length; ++i){
                 centroids[i] = new SequentialPoint(new double[centroids[0].getDim()]);
                 classCount[i] = new AtomicInteger(0);
             }
             barriers[2].await();
-            // PHASE 3
+            // PHASE 2
             // workers computing sum for each centroid
             barriers[3].await();
-            // PHASE 4
+            // PHASE 3
             for(int i = 0; i < classCount.length; ++i){
                 centroids[i].div(classCount[i].get());
             }
@@ -101,10 +100,10 @@ public class ParallelKmeans extends Kmeans{
         }
 
         public void run(){
-            System.out.println("Thread " + this.getName() + " started; Start: " + this.start + "; End: " + this.end);
+//            System.out.println("Thread " + this.getName() + " started; Start: " + this.start + "; End: " + this.end);
             for(int iter = 0; iter < numItearations; ++iter){
                 try {
-                    System.out.println("Thread " + this.getName() + "; Iter: " + iter);
+//                    System.out.println("Thread " + this.getName() + "; Iter: " + iter);
                     barriers[0].await(); // init loop barrier
 
                     // updating classes for each point

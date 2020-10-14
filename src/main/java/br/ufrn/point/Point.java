@@ -42,6 +42,7 @@ public abstract class Point implements Serializable {
         return sum;
     }
 
+
     // no relatorio botar que isso aqui precisa NAO PRECISO SER testado pq NAO tem estado comparitlhado
     public double distanceTo(Point p) {
         return distanceBetween(this, p);
@@ -59,7 +60,7 @@ public abstract class Point implements Serializable {
     }
 
 
-    public synchronized void div(int x) {
+    public void div(int x) {
         for(int i = 0; i < this.dim; ++i){
             coords[i] /= x;
         }
