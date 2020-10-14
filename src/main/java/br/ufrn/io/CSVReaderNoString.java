@@ -58,8 +58,8 @@ public class CSVReaderNoString implements CSVReader {
 
         String[] headerSplitted = header.split(this.delimiter);
 
-        int numPoints = Integer.parseInt(headerSplitted[0]);
-        int dimPoints = Integer.parseInt(headerSplitted[1]);
+        int numPoints = Integer.parseInt(headerSplitted[1]);
+        int dimPoints = Integer.parseInt(headerSplitted[2]);
 
         double[][] coords = new double[numPoints][];
 
@@ -81,7 +81,7 @@ public class CSVReaderNoString implements CSVReader {
                     if(line.charAt(i) == this.delimiter.charAt(0)){
                         if(delCount == 0){
                             pointPos = readInt(line, lastPos + 1, i);
-                            if(pointPos == 0) return;
+                            if(pointPos == -1) return;
                         }else{
                             pointCoords[delCount - 1] = readDouble(line, lastPos + 1, i);
                         }
@@ -89,7 +89,7 @@ public class CSVReaderNoString implements CSVReader {
                         lastPos = i;
                     }
                 }
-                coords[pointPos - 1] = pointCoords;
+                coords[pointPos] = pointCoords;
             });
         } catch (IOException e) {
             e.printStackTrace();

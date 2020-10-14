@@ -30,8 +30,8 @@ public class CSVReaderStringParser implements CSVReader{
 
         String[] headerSplitted = header.split(this.delimiter);
 
-        int numPoints = Integer.parseInt(headerSplitted[0]);
-        int dimPoints = Integer.parseInt(headerSplitted[1]);
+        int numPoints = Integer.parseInt(headerSplitted[1]);
+        int dimPoints = Integer.parseInt(headerSplitted[2]);
 
         double[][] coords = new double[numPoints][];
 
@@ -46,7 +46,7 @@ public class CSVReaderStringParser implements CSVReader{
 
             lineStream.forEach(line -> {
                 String[] parsedLine = line.split(delimiter);
-                int pointPos = Integer.parseInt(parsedLine[0]) - 1;
+                int pointPos = Integer.parseInt(parsedLine[0]);
                 if(pointPos == -1) return;
                 coords[pointPos] = new double[dimPoints];
                 for(int i = 0; i < dimPoints; ++i){

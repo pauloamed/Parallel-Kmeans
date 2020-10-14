@@ -36,7 +36,7 @@ else:
 
 
 with open(args.outputFile, "w") as f:
-    f.write(f"{numberOfPoints};{dimensionOfPoints}\n")
+    f.write(f"-1;{numberOfPoints};{dimensionOfPoints}\n")
     for i in range(numberOfPoints):
         line = [(random.uniform(-INF, INF)) for _ in range(dimensionOfPoints)]
         f.write("{};".format(i))
