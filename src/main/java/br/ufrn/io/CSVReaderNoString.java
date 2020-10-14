@@ -20,15 +20,26 @@ public class CSVReaderNoString implements CSVReader {
     }
 
     private int readInt(String s, int start, int end){
+        boolean isNeg = false;
+        if(s.charAt(start) == '-'){
+            isNeg = true;
+            start++;
+        }
         int num = 0;
         for(int i = start; i < end; ++i){
             num *= 10;
             num += Character.getNumericValue(s.charAt(i));
         }
+        if(isNeg) num = -num;
         return num;
     }
 
     private double readDouble(String s, int start, int end){
+        boolean isNeg = false;
+        if(s.charAt(start) == '-'){
+            isNeg = true;
+            start++;
+        }
         double num = 0;
         boolean afterPoint = false;
         int divisor = 1;
@@ -44,6 +55,7 @@ public class CSVReaderNoString implements CSVReader {
                 }
             }
         }
+        if(isNeg) num = -num;
         return num / divisor;
     }
 
