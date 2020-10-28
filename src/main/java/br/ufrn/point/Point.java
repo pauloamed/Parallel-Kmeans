@@ -31,7 +31,7 @@ public abstract class Point implements Serializable {
         this.coords = p.coords.clone();
     }
 
-    public abstract int closestTo(Point points[]) throws InterruptedException;
+    public abstract int closestTo(Point points[]);
 
     public static double distanceBetween(Point a, Point b){
         double sum = 0.0;
