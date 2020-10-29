@@ -19,7 +19,7 @@ public class BenchTest {
 	@Warmup(iterations = 5) 
 	@OutputTimeUnit(TimeUnit.MICROSECONDS)
 	public void testDistanceBetween() {
-		Point.distanceBetween(state.point, state.point);
+		state.point.distanceTo(state.point);
 	}
 
 
