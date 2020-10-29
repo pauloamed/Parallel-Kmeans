@@ -32,39 +32,13 @@ public abstract class Point implements Serializable {
     }
 
     public abstract int closestTo(Point points[]);
-
-    public static double distanceBetween(Point a, Point b){
-        double sum = 0.0;
-        for(int i = 0; i < a.dim; ++i){
-            double x = (a.coords[i] - b.coords[i]);
-            sum += x * x;
-        }
-        return sum;
-    }
-
+    public abstract void add(Point p);
+    public abstract void div(int x);
+    public abstract double distanceTo(Point p);
 
     // no relatorio botar que isso aqui precisa NAO PRECISO SER testado pq NAO tem estado comparitlhado
-    public double distanceTo(Point p) {
-        return distanceBetween(this, p);
-    }
-
-    // no relatorio botar que isso aqui precisa ser testado pq tem estado comparitlhado
-    public synchronized void add(Point p) {
-        if(this.dim != p.getDim()){
-            throw new RuntimeException(this.dim + " " + p.getDim());
-        }else{
-            for(int i = 0; i < this.dim; ++i){
-                coords[i] += p.getCoord(i);
-            }
-        }
-    }
 
 
-    public void div(int x) {
-        for(int i = 0; i < this.dim; ++i){
-            coords[i] /= x;
-        }
-    }
 
     public String toString() {
         StringBuilder ret = new StringBuilder("(");
