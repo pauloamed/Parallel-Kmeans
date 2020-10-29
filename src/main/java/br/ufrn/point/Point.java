@@ -35,6 +35,7 @@ public abstract class Point implements Serializable {
     public abstract void add(Point p);
     public abstract void div(int x);
     public abstract double distanceTo(Point p);
+    public abstract double getCoord(int i);
 
     // no relatorio botar que isso aqui precisa NAO PRECISO SER testado pq NAO tem estado comparitlhado
 
@@ -43,7 +44,7 @@ public abstract class Point implements Serializable {
     public String toString() {
         StringBuilder ret = new StringBuilder("(");
         for(int i = 0; i < this.dim; ++i){
-            ret.append(this.coords[i]);
+            ret.append(this.getCoord(i));
             if(i < this.dim - 1) ret.append(", ");
         }
         ret.append(")");
@@ -54,18 +55,11 @@ public abstract class Point implements Serializable {
         return dim;
     }
 
-    public double[] getCoords(){
-        return coords;
-    }
-
-    public double getCoord(int i){
-        return coords[i];
-    }
 
     public boolean equalsTo(Point p){
         if(this.dim != p.dim) return false;
         for(int i = 0; i < dim; i++){
-            if(abs(this.coords[i] - p.coords[i]) > EPS){
+            if(abs(this.getCoord(i) - p.getCoord(i)) > EPS){
                 return false;
             }
         }

@@ -1,15 +1,19 @@
 package br.ufrn.point;
 
-public class SequentialPoint extends Point {
+import br.ufrn.util.AtomicDouble;
 
-    public SequentialPoint(double[] coords) {
+public class ParallelPoint extends Point{
+
+    private AtomicDouble coords[];
+
+    public ParallelPoint(double[] coords) {
         super(coords);
     }
-    public SequentialPoint(int dim) {
+    public ParallelPoint(int dim) {
         super(dim);
     }
-    public SequentialPoint(){}
-    public SequentialPoint(Point p) {
+    public ParallelPoint(){}
+    public ParallelPoint(Point p) {
         super(p);
     }
 
@@ -29,13 +33,16 @@ public class SequentialPoint extends Point {
         return closestPoint;
     }
 
-    // no relatorio botar que isso aqui precisa ser testado pq tem estado comparitlhado
+
+    @Override
     public void add(Point p) {
         for(int i = 0; i < this.dim; ++i){
-            coords[i] += p.getCoord(i);
+            coords[i].addAndGet(p.getCoord(i));
         }
     }
 
+
+    @Override
     public double distanceTo(Point p) {
         double sum = 0.0;
         for(int i = 0; i < this.dim; ++i){
@@ -45,15 +52,20 @@ public class SequentialPoint extends Point {
         return sum;
     }
 
+
     @Override
     public double getCoord(int i) {
-        return coords[i];
+        return coords[i].get();
     }
 
 
+    @Override
     public void div(int x) {
         for(int i = 0; i < this.dim; ++i){
-            coords[i] /= x;
+            double curr = this.coords[i].get();
+            if(this.coords[i].compareAndSet(curr, curr / x)) {
+                return;
+            }
         }
     }
 }
