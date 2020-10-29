@@ -123,7 +123,7 @@ public class ForkJoinKmeans extends Kmeans{
                 for(int i = l; i < r; ++i){
                     int pointClass = classes[i];
                     centroids[pointClass].add(points[i]);
-                    classCount[pointClass].getAndAdd(1);
+                    classCount[pointClass].incrementAndGet();
                 }
             }else{
                 int mid = l + len/2;
