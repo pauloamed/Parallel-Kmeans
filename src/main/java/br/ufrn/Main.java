@@ -4,11 +4,10 @@ import br.ufrn.io.CSVReader;
 import br.ufrn.io.CSVReaderNoString;
 import br.ufrn.io.CSVReaderStringBuilder;
 import br.ufrn.io.CSVReaderStringParser;
-import br.ufrn.kmeans.Kmeans;
-import br.ufrn.kmeans.ParallelKmeans;
-import br.ufrn.kmeans.SequentialKmeans;
-import br.ufrn.point.SequentialPoint;
+import br.ufrn.kmeans.*;
+import br.ufrn.point.*;
 
+import net.sf.saxon.expr.instruct.Fork;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.CommandLine;
@@ -26,7 +25,7 @@ public class Main{
         Option inputOpt = new Option("i", "input", true, "Input file path");
         Option KOpt = new Option("k", true, "Number of clusters");
         Option numItersOpt = new Option("n", "iterations", true, "Number of iterations");
-        Option parallelOpt = new Option("p", "parallel", true, "Parallel execution");
+        Option parallelOpt = new Option("a", "algorithm", true, "Algo");
         Option readingMechOpt = new Option("r", "reading", true, "File reading mechanism");
 
         inputOpt.setRequired(true);
@@ -64,7 +63,7 @@ public class Main{
 
         String inputFilePath = cmd.getOptionValue("input");
         int K = Integer.parseInt(cmd.getOptionValue("k"));
-        boolean parallel = Boolean.parseBoolean(cmd.getOptionValue("parallel"));
+        String algorithm = cmd.getOptionValue("algorithm");
         int numIters = Integer.parseInt(cmd.getOptionValue("iterations"));
         String readingMech = cmd.getOptionValue("reading");
 
@@ -80,22 +79,48 @@ public class Main{
             throw new Exception();
         }
 
-        double[][] coords = csvReader.readCoords(inputFilePath, parallel);
+        double[][] coords = csvReader.readCoords(inputFilePath, !algorithm.equals("seq"));
 
-
-        SequentialPoint[] seqPoints = new SequentialPoint[coords.length];
-        for(int i = 0; i < coords.length; ++i){
-            seqPoints[i] = new SequentialPoint(coords[i]);
-        }
-
-        System.out.println("Starting Main. Number of points: " + seqPoints.length + "; Dim: " + seqPoints[0].getDim());
 
         Kmeans kmeans;
-        if(parallel){
-            kmeans = new ParallelKmeans(Runtime.getRuntime().availableProcessors());
-        }else{
+        Point[] points = new Point[coords.length];
+
+        System.out.println("Starting Main. Number of points: " + points.length + "; Dim: " + points[0].getDim());
+
+        if(algorithm.equals("seq")){
             kmeans = new SequentialKmeans();
+        }else if(algorithm.equals("par")){
+            kmeans = new ParallelKmeans(Runtime.getRuntime().availableProcessors());
+        }else if(algorithm.equals("stream")){
+            kmeans = new StreamKmeans();
+        }else if(algorithm.equals("exec")){
+            kmeans = new ExecutorKmeans();
+        }else if(algorithm.equals("fork")){
+            kmeans = new ForkJoinKmeans(3);
+        }else{
+            throw new RuntimeException();
         }
-        int[] classes = kmeans.run(seqPoints, K, numIters);
+
+        if(algorithm.equals("seq")){
+            for(int i = 0; i < coords.length; ++i){
+                points[i] = new SequentialPoint(coords[i]);
+            }
+        }else if(algorithm.equals("par")){
+            for(int i = 0; i < coords.length; ++i){
+                points[i] = new ParallelPoint(coords[i]);
+            }
+        }else if(algorithm.equals("stream")){
+            for(int i = 0; i < coords.length; ++i){
+                points[i] = new StreamPoint(coords[i]);
+            }
+        }else if(algorithm.equals("exec")){
+            for(int i = 0; i < coords.length; ++i){
+                points[i] = new ExecutorPoint(coords[i]);
+            }
+        }else{
+            throw new RuntimeException();
+        }
+
+        int[] classes = kmeans.run(points, K, numIters);
     }
 }
