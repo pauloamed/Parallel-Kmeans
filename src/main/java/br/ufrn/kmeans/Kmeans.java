@@ -45,5 +45,5 @@ public abstract class Kmeans {
     /*
      *   Runs algorithm for an array points, using K clusters and for numIterations
      *  */
-    public abstract int[] run(Point[] points, int K, int numIterations) throws InterruptedException, BrokenBarrierException;
+    public abstract int[] run(Point[] points, int K, int numIterations);
 }
