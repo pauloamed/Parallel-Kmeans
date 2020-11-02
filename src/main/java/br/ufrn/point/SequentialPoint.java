@@ -2,15 +2,21 @@ package br.ufrn.point;
 
 public class SequentialPoint extends Point {
 
-    public SequentialPoint(double[] coords) {
-        super(coords);
+    private final double[] coords;
+
+    public SequentialPoint(double coords[]){
+        this.dim = coords.length;
+        this.coords = coords.clone();
     }
-    public SequentialPoint(int dim) {
-        super(dim);
+
+    public SequentialPoint(int dim){
+        this.dim = dim;
+        coords = new double[dim];
     }
-    public SequentialPoint(){}
-    public SequentialPoint(Point p) {
-        super(p);
+
+    public SequentialPoint(){
+        this.dim = 1;
+        coords = new double[1];
     }
 
 

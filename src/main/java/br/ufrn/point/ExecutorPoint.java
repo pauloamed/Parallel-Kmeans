@@ -4,17 +4,13 @@ import br.ufrn.util.AtomicDouble;
 
 public class ExecutorPoint extends Point{
 
-    private AtomicDouble[] coords;
+    private AtomicDouble coords[];
 
     public ExecutorPoint(double[] coords) {
-        super(coords);
-    }
-    public ExecutorPoint(int dim) {
-        super(dim);
-    }
-    public ExecutorPoint(){}
-    public ExecutorPoint(Point p) {
-        super(p);
+        this.coords = new AtomicDouble[coords.length];
+        for(int i = 0; i < coords.length; ++i){
+            this.coords[i] = new AtomicDouble(coords[i]);
+        }
     }
 
     @Override

@@ -6,6 +6,7 @@ import br.ufrn.io.CSVReaderStringBuilder;
 import br.ufrn.kmeans.Kmeans;
 import br.ufrn.kmeans.ParallelKmeans;
 import br.ufrn.kmeans.SequentialKmeans;
+import br.ufrn.point.Point;
 import br.ufrn.point.SequentialPoint;
 import org.apache.jmeter.protocol.java.sampler.AbstractJavaSamplerClient;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
@@ -45,13 +46,12 @@ public class JmeterTest extends AbstractJavaSamplerClient implements Serializabl
 
         try {
             CSVReaderStringBuilder csvReader = new CSVReaderStringBuilder(";");
-            double[][] coords;
-            coords = csvReader.readCoords(inputFile, isParallel);
+            Point[] seqPoints = csvReader.readCoords(inputFile, isParallel, SequentialPoint::new);
 
-            SequentialPoint seqPoints[] = new SequentialPoint[coords.length];
-            for(int i = 0; i < coords.length; ++i){
-                seqPoints[i] = new SequentialPoint(coords[i]);
-            }
+//            SequentialPoint seqPoints[] = new SequentialPoint[coords.length];
+//            for(int i = 0; i < coords.length; ++i){
+//                seqPoints[i] = new SequentialPoint(coords[i]);
+//            }
 
             System.out.println("Starting Main. Number of points: " + seqPoints.length + "; Dim: " + seqPoints[0].getDim());
 

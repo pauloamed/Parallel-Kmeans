@@ -7,29 +7,8 @@ import static java.lang.Math.abs;
 public abstract class Point implements Serializable {
     // array guardando valores e classe
     // distance to
-    protected final double[] coords;
-    protected final int dim;
+    protected int dim;
     private final double EPS = 0.001;
-
-    public Point(double coords[]){
-        this.dim = coords.length;
-        this.coords = coords.clone();
-    }
-
-    public Point(int dim){
-        this.dim = dim;
-        coords = new double[dim];
-    }
-
-    public Point(){
-        this.dim = 1;
-        coords = new double[1];
-    }
-
-    public Point(Point p){
-        this.dim = p.dim;
-        this.coords = p.coords.clone();
-    }
 
     public abstract int closestTo(Point points[]);
     public abstract void add(Point p);

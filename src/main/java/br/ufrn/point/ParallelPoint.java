@@ -7,14 +7,19 @@ public class ParallelPoint extends Point{
     private AtomicDouble coords[];
 
     public ParallelPoint(double[] coords) {
-        super(coords);
+        this.coords = new AtomicDouble[coords.length];
+        for(int i = 0; i < coords.length; ++i){
+            this.coords[i] = new AtomicDouble(coords[i]);
+        }
+        this.dim = this.coords.length;
     }
+
     public ParallelPoint(int dim) {
-        super(dim);
-    }
-    public ParallelPoint(){}
-    public ParallelPoint(Point p) {
-        super(p);
+        this.coords = new AtomicDouble[dim];
+        for(int i = 0; i < coords.length; ++i){
+            this.coords[i] = new AtomicDouble(0);
+        }
+        this.dim = this.coords.length;
     }
 
 
@@ -62,10 +67,7 @@ public class ParallelPoint extends Point{
     @Override
     public void div(int x) {
         for(int i = 0; i < this.dim; ++i){
-            double curr = this.coords[i].get();
-            if(this.coords[i].compareAndSet(curr, curr / x)) {
-                return;
-            }
+            coords[i].div(x);
         }
     }
 }

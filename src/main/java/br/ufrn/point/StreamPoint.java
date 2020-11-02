@@ -11,26 +11,30 @@ public class StreamPoint extends Point{
     private AtomicDouble coords[];
 
     public StreamPoint(double[] coords) {
-        super(coords);
+        this.dim = coords.length;
+        this.coords = new AtomicDouble[coords.length];
+        for(int i = 0; i < coords.length; ++i){
+            this.coords[i] = new AtomicDouble(coords[i]);
+        }
     }
+
     public StreamPoint(int dim) {
-        super(dim);
-    }
-    public StreamPoint(){}
-    public StreamPoint(Point p) {
-        super(p);
+        this.dim = dim;
+        this.coords = new AtomicDouble[dim];
+        for(int i = 0; i < coords.length; ++i){
+            this.coords[i] = new AtomicDouble(0);
+        }
     }
 
     @Override
     public int closestTo(Point[] points) {
         return IntStream.range(0,points.length)
-                .parallel()
                 .reduce((a, b) -> {
                     double distanceToA = this.distanceTo(points[a]);
                     double distanceToB = this.distanceTo(points[b]);
                     return (distanceToA < distanceToB)? a : b;
                 })
-                .getAsInt();  // or throw
+                .getAsInt();
     }
 
     @Override
@@ -43,12 +47,7 @@ public class StreamPoint extends Point{
     @Override
     public void div(int x) {
         IntStream.range(0, this.getDim()).parallel().forEach(i -> {
-            while(true){
-                double curr = this.coords[i].get();
-                if(this.coords[i].compareAndSet(curr, curr / x)) {
-                    return;
-                }
-            }
+            coords[i].div(x);
         });
     }
 
@@ -60,10 +59,7 @@ public class StreamPoint extends Point{
                     double x = (this.getCoord(i) - p.getCoord(i));
                     return x * x;
                 })
-                .reduce((x, y) -> {
-                    return x + y;
-                })
-                .getAsDouble();
+                .sum();
     }
 
     @Override

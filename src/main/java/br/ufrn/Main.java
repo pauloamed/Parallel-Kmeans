@@ -70,22 +70,18 @@ public class Main{
         CSVReader csvReader;
 
         if(readingMech.equals("no")){
-            csvReader = new CSVReaderNoString();
+            csvReader = new CSVReaderNoString(";");
         }else if(readingMech.equals("builder")){
-            csvReader = new CSVReaderStringBuilder();
+            csvReader = new CSVReaderStringBuilder(";");
         }else if(readingMech.equals("parser")){
-            csvReader = new CSVReaderStringParser();
+            csvReader = new CSVReaderStringParser(";");
         }else{
             throw new Exception();
         }
 
-        double[][] coords = csvReader.readCoords(inputFilePath, !algorithm.equals("seq"));
-
+        Point[] points;
 
         Kmeans kmeans;
-        Point[] points = new Point[coords.length];
-
-        System.out.println("Starting Main. Number of points: " + points.length + "; Dim: " + points[0].getDim());
 
         if(algorithm.equals("seq")){
             kmeans = new SequentialKmeans();
@@ -95,32 +91,26 @@ public class Main{
             kmeans = new StreamKmeans();
         }else if(algorithm.equals("exec")){
             kmeans = new ExecutorKmeans();
-        }else if(algorithm.equals("fork")){
-            kmeans = new ForkJoinKmeans(3);
         }else{
             throw new RuntimeException();
         }
 
         if(algorithm.equals("seq")){
-            for(int i = 0; i < coords.length; ++i){
-                points[i] = new SequentialPoint(coords[i]);
-            }
+            points = csvReader.readCoords(inputFilePath, false, SequentialPoint::new);
         }else if(algorithm.equals("par")){
-            for(int i = 0; i < coords.length; ++i){
-                points[i] = new ParallelPoint(coords[i]);
-            }
+            points = csvReader.readCoords(inputFilePath, true, ParallelPoint::new);
         }else if(algorithm.equals("stream")){
-            for(int i = 0; i < coords.length; ++i){
-                points[i] = new StreamPoint(coords[i]);
-            }
+            points = csvReader.readCoords(inputFilePath, true, StreamPoint::new);
         }else if(algorithm.equals("exec")){
-            for(int i = 0; i < coords.length; ++i){
-                points[i] = new ExecutorPoint(coords[i]);
-            }
-        }else{
+            points = csvReader.readCoords(inputFilePath, true, ExecutorPoint::new);
+        }else {
             throw new RuntimeException();
         }
 
+        System.out.println("Starting. Number of points: " + points.length + "; Dim: " + points[0].getDim());
         int[] classes = kmeans.run(points, K, numIters);
+//        for(int i = 0; i < classes.length; ++i){
+//            System.out.println(classes[i]);
+//        }
     }
 }
