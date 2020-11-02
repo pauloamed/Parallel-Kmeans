@@ -1,4 +1,7 @@
 package br.ufrn.util;
 
-public class CreatePointInterface {
+import br.ufrn.point.Point;
+
+public interface CreatePointInterface {
+    Point createPoint(double coords[]);
 }
