@@ -1,5 +1,8 @@
 package br.ufrn.io;
 
+import br.ufrn.point.Point;
+import br.ufrn.util.CreatePointInterface;
+
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -10,16 +13,13 @@ public class CSVReaderStringParser implements CSVReader{
 
     private String delimiter;
 
-    public CSVReaderStringParser(){
-        this.delimiter = ";";
-    }
-
 
     public CSVReaderStringParser(String delimiter){
         this.delimiter = delimiter;
+
     }
 
-    public double[][] readCoords(String pathToCSV, boolean parallel) throws IOException {
+    public Point[] readCoords(String pathToCSV, boolean parallel, CreatePointInterface pointInterface) throws IOException {
         FileReader csvFileReader = new FileReader(pathToCSV);
         BufferedReader headerReader = new BufferedReader(csvFileReader);
 
@@ -33,7 +33,7 @@ public class CSVReaderStringParser implements CSVReader{
         int numPoints = Integer.parseInt(headerSplitted[1]);
         int dimPoints = Integer.parseInt(headerSplitted[2]);
 
-        double[][] coords = new double[numPoints][];
+        Point[] points = new Point[numPoints];
 
         File csvFile = new File(pathToCSV);
 
@@ -47,17 +47,19 @@ public class CSVReaderStringParser implements CSVReader{
             lineStream.forEach(line -> {
                 String[] parsedLine = line.split(delimiter);
                 int pointPos = Integer.parseInt(parsedLine[0]);
-                if(pointPos == -1) return;
-                coords[pointPos] = new double[dimPoints];
-                for(int i = 0; i < dimPoints; ++i){
-                    coords[pointPos][i] = Double.parseDouble(parsedLine[i + 1]);
+                if(pointPos != -1){
+                    double[] coords = new double[dimPoints];
+                    for(int i = 0; i < dimPoints; ++i){
+                        coords[i] = Double.parseDouble(parsedLine[i + 1]);
+                    }
+                    points[pointPos] = pointInterface.createPoint(coords);
                 }
             });
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        return coords;
+        return points;
     }
 
 

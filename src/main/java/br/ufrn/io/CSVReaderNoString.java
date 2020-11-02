@@ -1,6 +1,9 @@
 package br.ufrn.io;
 
 
+import br.ufrn.point.Point;
+import br.ufrn.util.CreatePointInterface;
+
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -9,11 +12,6 @@ import java.util.stream.Stream;
 public class CSVReaderNoString implements CSVReader {
 
     private String delimiter;
-
-    public CSVReaderNoString(){
-        this.delimiter = ";";
-    }
-
 
     public CSVReaderNoString(String delimiter){
         this.delimiter = delimiter;
@@ -59,7 +57,7 @@ public class CSVReaderNoString implements CSVReader {
         return num / divisor;
     }
 
-    public double[][] readCoords(String pathToCSV, boolean parallel) throws IOException {
+    public Point[] readCoords(String pathToCSV, boolean parallel, CreatePointInterface pointInterface) throws IOException {
         FileReader csvFileReader = new FileReader(pathToCSV);
         BufferedReader headerReader = new BufferedReader(csvFileReader);
 
@@ -73,7 +71,7 @@ public class CSVReaderNoString implements CSVReader {
         int numPoints = Integer.parseInt(headerSplitted[1]);
         int dimPoints = Integer.parseInt(headerSplitted[2]);
 
-        double[][] coords = new double[numPoints][];
+        Point[] points = new Point[numPoints];
 
         File csvFile = new File(pathToCSV);
 
@@ -93,7 +91,6 @@ public class CSVReaderNoString implements CSVReader {
                     if(line.charAt(i) == this.delimiter.charAt(0)){
                         if(delCount == 0){
                             pointPos = readInt(line, lastPos + 1, i);
-                            if(pointPos == -1) return;
                         }else{
                             pointCoords[delCount - 1] = readDouble(line, lastPos + 1, i);
                         }
@@ -101,13 +98,15 @@ public class CSVReaderNoString implements CSVReader {
                         lastPos = i;
                     }
                 }
-                coords[pointPos] = pointCoords;
+                if(pointPos != -1){
+                    points[pointPos] = pointInterface.createPoint(pointCoords);
+                }
             });
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        return coords;
+        return points;
     }
 
 
