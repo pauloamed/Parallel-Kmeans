@@ -25,13 +25,23 @@ public class AtomicDouble {
         return longBitsToDouble(bits.getAndSet(doubleToLongBits(newValue)));
     }
 
-    public final boolean compareAndSet(double expect, double update) {
+    public final boolean compareAndSet(double expect, double newValue) {
         return bits.compareAndSet(doubleToLongBits(expect),
-                doubleToLongBits(update));
+                doubleToLongBits(newValue));
     }
 
     public final double addAndGet(double value){
-        return longBitsToDouble(bits.addAndGet(doubleToLongBits(value)));
+        double curr;
+        do{
+            curr = get();
+        }while(!compareAndSet(curr, curr + value));
+        return curr + value;
     }
 
+    public void div(int x) {
+        double curr;
+        do{
+            curr = get();
+        }while(!compareAndSet(curr, curr / x));
+    }
 }
