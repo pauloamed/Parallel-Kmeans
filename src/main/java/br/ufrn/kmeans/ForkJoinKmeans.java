@@ -1,5 +1,6 @@
 package br.ufrn.kmeans;
 
+import br.ufrn.point.ForkJoinPoint;
 import br.ufrn.point.Point;
 import br.ufrn.point.SequentialPoint;
 
@@ -35,7 +36,7 @@ public class ForkJoinKmeans extends Kmeans{
     protected void updateCentroids(Point[] points){
         // reseting the centroids
         for(int i = 0; i < centroids.length; ++i){
-            centroids[i] = new SequentialPoint(new double[points[0].getDim()]);
+            centroids[i] = new ForkJoinPoint(points[0].getDim(), pool);
         }
 
         // array for counting num of points associated to each class
@@ -59,7 +60,7 @@ public class ForkJoinKmeans extends Kmeans{
             throw new RuntimeException();
         }
 
-        this.centroids = new Point[K]; // centroids class (K)
+        this.centroids = new ForkJoinPoint[K]; // centroids class (K)
         this.classes = new int[points.length]; // classes for each point (N)
 
         // initing centroids
