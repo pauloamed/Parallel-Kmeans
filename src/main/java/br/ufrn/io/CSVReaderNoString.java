@@ -4,56 +4,59 @@ package br.ufrn.io;
 import br.ufrn.point.Point;
 import br.ufrn.util.CreatePointInterface;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.stream.Stream;
 
 public class CSVReaderNoString implements CSVReader {
 
-    private String delimiter;
+    private final String delimiter;
 
-    public CSVReaderNoString(String delimiter){
+    public CSVReaderNoString(String delimiter) {
         this.delimiter = delimiter;
     }
 
-    private int readInt(String s, int start, int end){
+    private int readInt(String s, int start, int end) {
         boolean isNeg = false;
-        if(s.charAt(start) == '-'){
+        if (s.charAt(start) == '-') {
             isNeg = true;
             start++;
         }
         int num = 0;
-        for(int i = start; i < end; ++i){
+        for (int i = start; i < end; ++i) {
             num *= 10;
             num += Character.getNumericValue(s.charAt(i));
         }
-        if(isNeg) num = -num;
+        if (isNeg) num = -num;
         return num;
     }
 
-    private double readDouble(String s, int start, int end){
+    private double readDouble(String s, int start, int end) {
         boolean isNeg = false;
-        if(s.charAt(start) == '-'){
+        if (s.charAt(start) == '-') {
             isNeg = true;
             start++;
         }
         double num = 0;
         boolean afterPoint = false;
         int divisor = 1;
-        for(int i = start; i < end; ++i){
-            if(s.charAt(i) == this.delimiter.charAt(0)){
+        for (int i = start; i < end; ++i) {
+            if (s.charAt(i) == this.delimiter.charAt(0)) {
                 afterPoint = true;
-            }else{
+            } else {
                 num *= 10;
                 num += Character.getNumericValue(s.charAt(i));
 
-                if(afterPoint){
+                if (afterPoint) {
                     divisor *= 10;
                 }
             }
         }
-        if(isNeg) num = -num;
+        if (isNeg) num = -num;
         return num / divisor;
     }
 
@@ -75,10 +78,10 @@ public class CSVReaderNoString implements CSVReader {
 
         File csvFile = new File(pathToCSV);
 
-        try{
+        try {
             Stream<String> lineStream = Files.lines(csvFile.toPath(), StandardCharsets.UTF_8);
 
-            if(parallel){
+            if (parallel) {
                 lineStream = lineStream.parallel();
             }
 
@@ -87,18 +90,18 @@ public class CSVReaderNoString implements CSVReader {
                 int delCount = 0;
                 int lastPos = -1;
                 double[] pointCoords = new double[dimPoints];
-                for(int i = 0; i < line.length(); ++i){
-                    if(line.charAt(i) == this.delimiter.charAt(0)){
-                        if(delCount == 0){
+                for (int i = 0; i < line.length(); ++i) {
+                    if (line.charAt(i) == this.delimiter.charAt(0)) {
+                        if (delCount == 0) {
                             pointPos = readInt(line, lastPos + 1, i);
-                        }else{
+                        } else {
                             pointCoords[delCount - 1] = readDouble(line, lastPos + 1, i);
                         }
                         delCount++;
                         lastPos = i;
                     }
                 }
-                if(pointPos != -1){
+                if (pointPos != -1) {
                     points[pointPos] = pointInterface.createPoint(pointCoords);
                 }
             });
@@ -108,7 +111,6 @@ public class CSVReaderNoString implements CSVReader {
 
         return points;
     }
-
 
 
 }

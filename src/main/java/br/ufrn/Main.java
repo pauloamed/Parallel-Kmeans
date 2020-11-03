@@ -6,20 +6,12 @@ import br.ufrn.io.CSVReaderStringBuilder;
 import br.ufrn.io.CSVReaderStringParser;
 import br.ufrn.kmeans.*;
 import br.ufrn.point.*;
-
-import net.sf.saxon.expr.instruct.Fork;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.ParseException;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.*;
 
 
-public class Main{
+public class Main {
 
-    private static Options initCLIOptions(){
+    private static Options initCLIOptions() {
         Options options = new Options();
 
         Option inputOpt = new Option("i", "input", true, "Input file path");
@@ -69,13 +61,13 @@ public class Main{
 
         CSVReader csvReader;
 
-        if(readingMech.equals("no")){
+        if (readingMech.equals("no")) {
             csvReader = new CSVReaderNoString(";");
-        }else if(readingMech.equals("builder")){
+        } else if (readingMech.equals("builder")) {
             csvReader = new CSVReaderStringBuilder(";");
-        }else if(readingMech.equals("parser")){
+        } else if (readingMech.equals("parser")) {
             csvReader = new CSVReaderStringParser(";");
-        }else{
+        } else {
             throw new Exception();
         }
 
@@ -83,34 +75,38 @@ public class Main{
 
         Kmeans kmeans;
 
-        if(algorithm.equals("seq")){
+        if (algorithm.equals("seq")) {
             kmeans = new SequentialKmeans();
-        }else if(algorithm.equals("par")){
+        } else if (algorithm.equals("par")) {
             kmeans = new ParallelKmeans(Runtime.getRuntime().availableProcessors());
-        }else if(algorithm.equals("stream")){
+        } else if (algorithm.equals("stream")) {
             kmeans = new StreamKmeans();
-        }else if(algorithm.equals("exec")){
+        } else if (algorithm.equals("exec")) {
             kmeans = new ExecutorKmeans();
-        }else{
+        } else if (algorithm.equals("fork")) {
+            kmeans = new ForkJoinKmeans(5);
+        } else {
             throw new RuntimeException();
         }
 
-        if(algorithm.equals("seq")){
+        if (algorithm.equals("seq")) {
             points = csvReader.readCoords(inputFilePath, false, SequentialPoint::new);
-        }else if(algorithm.equals("par")){
+        } else if (algorithm.equals("par")) {
             points = csvReader.readCoords(inputFilePath, true, ParallelPoint::new);
-        }else if(algorithm.equals("stream")){
+        } else if (algorithm.equals("stream")) {
             points = csvReader.readCoords(inputFilePath, true, StreamPoint::new);
-        }else if(algorithm.equals("exec")){
+        } else if (algorithm.equals("exec")) {
             points = csvReader.readCoords(inputFilePath, true, ExecutorPoint::new);
-        }else {
+        } else if (algorithm.equals("fork")) {
+            points = csvReader.readCoords(inputFilePath, true, ForkJoinPoint::new);
+        } else {
             throw new RuntimeException();
         }
 
         System.out.println("Starting. Number of points: " + points.length + "; Dim: " + points[0].getDim());
         int[] classes = kmeans.run(points, K, numIters);
-//        for(int i = 0; i < classes.length; ++i){
-//            System.out.println(classes[i]);
-//        }
+        for(int i = 0; i < classes.length; ++i){
+            System.out.println(classes[i]);
+        }
     }
 }

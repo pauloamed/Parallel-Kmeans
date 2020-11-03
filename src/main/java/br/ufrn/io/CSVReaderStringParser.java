@@ -3,18 +3,20 @@ package br.ufrn.io;
 import br.ufrn.point.Point;
 import br.ufrn.util.CreatePointInterface;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.time.Instant;
 import java.util.stream.Stream;
 
-public class CSVReaderStringParser implements CSVReader{
+public class CSVReaderStringParser implements CSVReader {
 
-    private String delimiter;
+    private final String delimiter;
 
 
-    public CSVReaderStringParser(String delimiter){
+    public CSVReaderStringParser(String delimiter) {
         this.delimiter = delimiter;
 
     }
@@ -37,19 +39,19 @@ public class CSVReaderStringParser implements CSVReader{
 
         File csvFile = new File(pathToCSV);
 
-        try{
+        try {
             Stream<String> lineStream = Files.lines(csvFile.toPath(), StandardCharsets.UTF_8);
 
-            if(parallel){
+            if (parallel) {
                 lineStream = lineStream.parallel();
             }
 
             lineStream.forEach(line -> {
                 String[] parsedLine = line.split(delimiter);
                 int pointPos = Integer.parseInt(parsedLine[0]);
-                if(pointPos != -1){
+                if (pointPos != -1) {
                     double[] coords = new double[dimPoints];
-                    for(int i = 0; i < dimPoints; ++i){
+                    for (int i = 0; i < dimPoints; ++i) {
                         coords[i] = Double.parseDouble(parsedLine[i + 1]);
                     }
                     points[pointPos] = pointInterface.createPoint(coords);
@@ -61,7 +63,6 @@ public class CSVReaderStringParser implements CSVReader{
 
         return points;
     }
-
 
 
 }

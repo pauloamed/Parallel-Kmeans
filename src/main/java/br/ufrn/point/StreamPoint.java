@@ -2,18 +2,17 @@ package br.ufrn.point;
 
 import br.ufrn.util.AtomicDouble;
 
-import java.util.OptionalDouble;
+import java.util.Comparator;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
-public class StreamPoint extends Point{
+public class StreamPoint extends Point {
 
-    private AtomicDouble coords[];
+    private final AtomicDouble[] coords;
 
     public StreamPoint(double[] coords) {
         this.dim = coords.length;
         this.coords = new AtomicDouble[coords.length];
-        for(int i = 0; i < coords.length; ++i){
+        for (int i = 0; i < coords.length; ++i) {
             this.coords[i] = new AtomicDouble(coords[i]);
         }
     }
@@ -21,20 +20,18 @@ public class StreamPoint extends Point{
     public StreamPoint(int dim) {
         this.dim = dim;
         this.coords = new AtomicDouble[dim];
-        for(int i = 0; i < coords.length; ++i){
+        for (int i = 0; i < coords.length; ++i) {
             this.coords[i] = new AtomicDouble(0);
         }
     }
 
     @Override
-    public int closestTo(Point[] points) {
-        return IntStream.range(0,points.length)
-                .reduce((a, b) -> {
-                    double distanceToA = this.distanceTo(points[a]);
-                    double distanceToB = this.distanceTo(points[b]);
-                    return (distanceToA < distanceToB)? a : b;
-                })
-                .getAsInt();
+    public int closestTo(Point[] points) { // botar um jmh aqui e comparar com o parallel
+        return IntStream.range(0, points.length)
+                .parallel()
+                .boxed()
+                .min(Comparator.comparing(i -> distanceTo(points[i])))
+                .get();
     }
 
     @Override

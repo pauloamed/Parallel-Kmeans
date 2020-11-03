@@ -2,11 +2,12 @@ package br.ufrn.util;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-import static java.lang.Double.*;
+import static java.lang.Double.doubleToLongBits;
+import static java.lang.Double.longBitsToDouble;
 
 public class AtomicDouble {
 
-    private AtomicLong bits;
+    private final AtomicLong bits;
 
     public AtomicDouble() {
         this(0f);
@@ -30,18 +31,18 @@ public class AtomicDouble {
                 doubleToLongBits(newValue));
     }
 
-    public final double addAndGet(double value){
+    public final double addAndGet(double value) {
         double curr;
-        do{
+        do {
             curr = get();
-        }while(!compareAndSet(curr, curr + value));
+        } while (!compareAndSet(curr, curr + value));
         return curr + value;
     }
 
     public void div(int x) {
         double curr;
-        do{
+        do {
             curr = get();
-        }while(!compareAndSet(curr, curr / x));
+        } while (!compareAndSet(curr, curr / x));
     }
 }

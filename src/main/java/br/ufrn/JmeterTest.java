@@ -1,17 +1,17 @@
 package br.ufrn;
 
-import java.io.Serializable;
-
 import br.ufrn.io.CSVReaderStringBuilder;
 import br.ufrn.kmeans.Kmeans;
 import br.ufrn.kmeans.ParallelKmeans;
 import br.ufrn.kmeans.SequentialKmeans;
 import br.ufrn.point.Point;
 import br.ufrn.point.SequentialPoint;
+import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.java.sampler.AbstractJavaSamplerClient;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.SampleResult;
-import org.apache.jmeter.config.Arguments;
+
+import java.io.Serializable;
 
 
 public class JmeterTest extends AbstractJavaSamplerClient implements Serializable {
@@ -31,10 +31,10 @@ public class JmeterTest extends AbstractJavaSamplerClient implements Serializabl
     @Override
     public SampleResult runTest(JavaSamplerContext context) {
         // pull parameters
-        String numberOfIterationsStr = context.getParameter( "NumberOfIterations" );
-        String KStr = context.getParameter( "K" );
-        String inputFile = context.getParameter( "InputFile" );
-        String isParallelStr = context.getParameter( "IsParallel" );
+        String numberOfIterationsStr = context.getParameter("NumberOfIterations");
+        String KStr = context.getParameter("K");
+        String inputFile = context.getParameter("InputFile");
+        String isParallelStr = context.getParameter("IsParallel");
 
         int numberOfThreads = Runtime.getRuntime().availableProcessors();
         int numberOfIterations = Integer.parseInt(numberOfIterationsStr);
@@ -56,27 +56,27 @@ public class JmeterTest extends AbstractJavaSamplerClient implements Serializabl
             System.out.println("Starting Main. Number of points: " + seqPoints.length + "; Dim: " + seqPoints[0].getDim());
 
             Kmeans kmeans;
-            if(isParallel) kmeans = new ParallelKmeans(numberOfThreads);
+            if (isParallel) kmeans = new ParallelKmeans(numberOfThreads);
             else kmeans = new SequentialKmeans();
 
             kmeans.run(seqPoints, K, numberOfIterations);
 
 
             result.sampleEnd(); // stop stopwatch
-            result.setSuccessful( true );
-            result.setResponseMessage( "Successfully performed action" );
+            result.setSuccessful(true);
+            result.setResponseMessage("Successfully performed action");
             result.setResponseCodeOK(); // 200 code
         } catch (Exception e) {
             result.sampleEnd(); // stop stopwatch
-            result.setSuccessful( false );
-            result.setResponseMessage( "Exception: " + e );
+            result.setSuccessful(false);
+            result.setResponseMessage("Exception: " + e);
 
             // get stack trace as a String to return as document data
             java.io.StringWriter stringWriter = new java.io.StringWriter();
-            e.printStackTrace( new java.io.PrintWriter( stringWriter ) );
-            result.setResponseData( stringWriter.toString() );
-            result.setDataType( org.apache.jmeter.samplers.SampleResult.TEXT );
-            result.setResponseCode( "500" );
+            e.printStackTrace(new java.io.PrintWriter(stringWriter));
+            result.setResponseData(stringWriter.toString());
+            result.setDataType(org.apache.jmeter.samplers.SampleResult.TEXT);
+            result.setResponseCode("500");
         }
 
         return result;

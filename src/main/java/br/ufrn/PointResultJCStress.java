@@ -25,8 +25,7 @@ public class PointResultJCStress implements Serializable {
             return true;
         } else if (o != null && this.getClass() == o.getClass()) {
             PointResultJCStress that = (PointResultJCStress) o;
-            if(this.point.equalsTo(that.point)) return false;
-            return true;
+            return !this.point.equalsTo(that.point);
         } else {
             return false;
         }

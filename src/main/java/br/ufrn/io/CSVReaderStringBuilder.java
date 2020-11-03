@@ -3,17 +3,19 @@ package br.ufrn.io;
 import br.ufrn.point.Point;
 import br.ufrn.util.CreatePointInterface;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.time.Instant;
 import java.util.stream.Stream;
 
-public class CSVReaderStringBuilder implements CSVReader{
+public class CSVReaderStringBuilder implements CSVReader {
 
-    private String delimiter;
+    private final String delimiter;
 
-    public CSVReaderStringBuilder(String delimiter){
+    public CSVReaderStringBuilder(String delimiter) {
         this.delimiter = delimiter;
     }
 
@@ -32,13 +34,13 @@ public class CSVReaderStringBuilder implements CSVReader{
         int dimPoints = Integer.parseInt(headerSplitted[2]);
 
         Point[] points = new Point[numPoints];
-        
+
         File csvFile = new File(pathToCSV);
-        
-        try{
+
+        try {
             Stream<String> lineStream = Files.lines(csvFile.toPath(), StandardCharsets.UTF_8);
 
-            if(parallel){
+            if (parallel) {
                 lineStream = lineStream.parallel();
             }
 
@@ -48,20 +50,20 @@ public class CSVReaderStringBuilder implements CSVReader{
 
                 int delCount = 0;
                 StringBuilder stringBuilder = new StringBuilder();
-                for(int charPos = 0; charPos < line.length(); ++charPos){
-                    if(line.charAt(charPos) == delimiter.charAt(0)){
-                        if(delCount == 0){
+                for (int charPos = 0; charPos < line.length(); ++charPos) {
+                    if (line.charAt(charPos) == delimiter.charAt(0)) {
+                        if (delCount == 0) {
                             pointPos = Integer.parseInt(stringBuilder.toString());
-                        }else{
+                        } else {
                             pointCoords[delCount - 1] = Double.parseDouble((stringBuilder.toString()));
                         }
                         stringBuilder.setLength(0);
                         delCount++;
-                    }else{
+                    } else {
                         stringBuilder.append(line.charAt(charPos));
                     }
                 }
-                if(pointPos != -1){
+                if (pointPos != -1) {
                     points[pointPos] = pointInterface.createPoint(pointCoords);
                 }
             });
@@ -71,7 +73,6 @@ public class CSVReaderStringBuilder implements CSVReader{
 
         return points;
     }
-
 
 
 }

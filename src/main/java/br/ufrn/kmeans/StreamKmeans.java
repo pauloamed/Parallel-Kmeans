@@ -1,14 +1,12 @@
 package br.ufrn.kmeans;
 
-import br.ufrn.point.ParallelPoint;
 import br.ufrn.point.Point;
-import br.ufrn.point.SequentialPoint;
 import br.ufrn.point.StreamPoint;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 
-public class StreamKmeans extends Kmeans{
+public class StreamKmeans extends Kmeans {
 
 
     public StreamKmeans() {
@@ -18,12 +16,12 @@ public class StreamKmeans extends Kmeans{
      *   Update the centroids array, given that the classes array is already updated
      *   Just does the average point for each of the K classes and saves them on centroids
      *  */
-    protected void updateCentroids(Point[] points){
+    protected void updateCentroids(Point[] points) {
         // reseting the centroids
         // array for counting num of points associated to each class
         // i-th class refers to i-th centroid
         AtomicInteger[] classCount = new AtomicInteger[centroids.length];
-        for(int i = 0; i < centroids.length; ++i){
+        for (int i = 0; i < centroids.length; ++i) {
             classCount[i] = new AtomicInteger(0);
             centroids[i] = new StreamPoint(points[0].getDim());
         }
@@ -41,10 +39,10 @@ public class StreamKmeans extends Kmeans{
         });
     }
 
-    public int[] run(Point[] points, int K, int numIterations){
+    public int[] run(Point[] points, int K, int numIterations) {
 
         // algorithm wont run for K <= 1 or K > N
-        if(K <= 1 || K > points.length){
+        if (K <= 1 || K > points.length) {
             throw new RuntimeException();
         }
 
@@ -56,7 +54,7 @@ public class StreamKmeans extends Kmeans{
 
 
         // runs algo for numIterations steps
-        for(int iter = 0; iter < numIterations; iter++){
+        for (int iter = 0; iter < numIterations; iter++) {
             IntStream.range(0, points.length).parallel().forEach(i -> {
                 classes[i] = points[i].closestTo(centroids);
             });
