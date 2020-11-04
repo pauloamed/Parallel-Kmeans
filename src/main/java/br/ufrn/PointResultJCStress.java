@@ -1,5 +1,6 @@
 package br.ufrn;
 
+import br.ufrn.point.Point;
 import br.ufrn.point.SequentialPoint;
 import org.openjdk.jcstress.annotations.Result;
 import sun.misc.Contended;
@@ -11,7 +12,7 @@ public class PointResultJCStress implements Serializable {
     @Contended
     @jdk.internal.vm.annotation.Contended
 
-    public SequentialPoint point;
+    public Point point;
 
     public PointResultJCStress() {
     }
