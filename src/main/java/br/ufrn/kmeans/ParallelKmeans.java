@@ -2,6 +2,7 @@ package br.ufrn.kmeans;
 
 import br.ufrn.point.ParallelPoint;
 import br.ufrn.point.Point;
+import br.ufrn.util.CreatePointInterface;
 
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
@@ -13,7 +14,8 @@ public class ParallelKmeans extends Kmeans {
     private final CyclicBarrier[] barriers;
     private AtomicInteger[] classCount;
 
-    public ParallelKmeans(int numThreads) {
+    public ParallelKmeans(CreatePointInterface createPointInterface, int numThreads) {
+        super(createPointInterface);
         this.numThreads = numThreads;
         this.barriers = new CyclicBarrier[4];
         for (int i = 0; i < barriers.length; ++i) {
@@ -39,7 +41,7 @@ public class ParallelKmeans extends Kmeans {
     public int[] run(Point[] points, int K, int numIterations) {
         WorkerThread[] workers = new WorkerThread[numThreads];
 
-        this.centroids = new ParallelPoint[K]; // centroids class (K)
+        this.centroids = new Point[K]; // centroids class (K)
         this.classes = new int[points.length]; // classes for each point (N)
 
         initCentroids(points, K);
@@ -66,7 +68,7 @@ public class ParallelKmeans extends Kmeans {
                 classCount = new AtomicInteger[centroids.length];
                 // reseting the centroids, init for next phase
                 for (int i = 0; i < centroids.length; ++i) {
-                    centroids[i] = new ParallelPoint(centroids[0].getDim());
+                    centroids[i] = createPointInterface.createPoint(new double[points[0].getDim()]);
                     classCount[i] = new AtomicInteger(0);
                 }
                 barriers[2].await();

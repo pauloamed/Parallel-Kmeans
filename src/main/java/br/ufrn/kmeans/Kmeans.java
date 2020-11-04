@@ -1,6 +1,7 @@
 package br.ufrn.kmeans;
 
 import br.ufrn.point.Point;
+import br.ufrn.util.CreatePointInterface;
 
 import java.util.HashSet;
 import java.util.Random;
@@ -14,13 +15,16 @@ public abstract class Kmeans {
      * */
     protected int[] classes;
 
+    protected CreatePointInterface createPointInterface;
+
     /*
      *   Array containing the points representing the classes centroids
      *   Size of array: K
      * */
     protected Point[] centroids;
 
-    public Kmeans() {
+    public Kmeans(CreatePointInterface createPointInterface) {
+        this.createPointInterface = createPointInterface;
     }
 
     /*

@@ -2,6 +2,7 @@ package br.ufrn.kmeans;
 
 import br.ufrn.point.ExecutorPoint;
 import br.ufrn.point.Point;
+import br.ufrn.util.CreatePointInterface;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +17,8 @@ public class ExecutorKmeans extends Kmeans {
 
     private static ExecutorService exec;
 
-    public ExecutorKmeans() {
+    public ExecutorKmeans(CreatePointInterface createPointInterface) {
+        super(createPointInterface);
         exec = getExec();
     }
 
@@ -42,7 +44,7 @@ public class ExecutorKmeans extends Kmeans {
     protected void updateCentroids(Point[] points) throws InterruptedException {
         // reseting the centroidsSequentialPoint
         for (int i = 0; i < centroids.length; ++i) {
-            centroids[i] = new ExecutorPoint(points[0].getDim());
+            centroids[i] = createPointInterface.createPoint(new double[points[0].getDim()]);
         }
 
         // array for counting num of points associated to each class
@@ -85,7 +87,7 @@ public class ExecutorKmeans extends Kmeans {
 
 
 
-        this.centroids = new ExecutorPoint[K]; // centroids class (K)
+        this.centroids = new Point[K]; // centroids class (K)
         this.classes = new int[points.length]; // classes for each point (N)
 
         // initing centroids

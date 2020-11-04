@@ -2,6 +2,7 @@ package br.ufrn.kmeans;
 
 import br.ufrn.point.ForkJoinPoint;
 import br.ufrn.point.Point;
+import br.ufrn.util.CreatePointInterface;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -14,7 +15,8 @@ public class ForkJoinKmeans extends Kmeans {
     private final ForkJoinPool pool;
     int seqThreshold;
 
-    public ForkJoinKmeans(int seqThreshold) {
+    public ForkJoinKmeans(CreatePointInterface createPointInterface, int seqThreshold) {
+        super(createPointInterface);
         pool = ForkJoinPool.commonPool();
         this.seqThreshold = seqThreshold;
     }
@@ -36,7 +38,7 @@ public class ForkJoinKmeans extends Kmeans {
         AtomicInteger[] classCount = new AtomicInteger[centroids.length];
         // reseting the centroids
         for (int i = 0; i < centroids.length; ++i) {
-            centroids[i] = new ForkJoinPoint(points[0].getDim());
+            centroids[i] = createPointInterface.createPoint(new double[points[0].getDim()]);
             classCount[i] = new AtomicInteger(0);
         }
 
@@ -61,7 +63,7 @@ public class ForkJoinKmeans extends Kmeans {
             throw new RuntimeException();
         }
 
-        this.centroids = new ForkJoinPoint[K]; // centroids class (K)
+        this.centroids = new Point[K]; // centroids class (K)
         this.classes = new int[points.length]; // classes for each point (N)
 
         // initing centroids

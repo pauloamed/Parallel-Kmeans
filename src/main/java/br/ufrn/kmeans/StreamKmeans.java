@@ -2,6 +2,7 @@ package br.ufrn.kmeans;
 
 import br.ufrn.point.Point;
 import br.ufrn.point.StreamPoint;
+import br.ufrn.util.CreatePointInterface;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
@@ -9,7 +10,8 @@ import java.util.stream.IntStream;
 public class StreamKmeans extends Kmeans {
 
 
-    public StreamKmeans() {
+    public StreamKmeans(CreatePointInterface createPointInterface) {
+        super(createPointInterface);
     }
 
     /*
@@ -23,7 +25,7 @@ public class StreamKmeans extends Kmeans {
         AtomicInteger[] classCount = new AtomicInteger[centroids.length];
         for (int i = 0; i < centroids.length; ++i) {
             classCount[i] = new AtomicInteger(0);
-            centroids[i] = new StreamPoint(points[0].getDim());
+            centroids[i] = createPointInterface.createPoint(new double[points[0].getDim()]);
         }
 
         // for each point, retrieve its class and increase its counter
@@ -46,7 +48,7 @@ public class StreamKmeans extends Kmeans {
             throw new RuntimeException();
         }
 
-        this.centroids = new StreamPoint[K]; // centroids class (K)
+        this.centroids = new Point[K]; // centroids class (K)
         this.classes = new int[points.length]; // classes for each point (N)
 
         // initing centroids

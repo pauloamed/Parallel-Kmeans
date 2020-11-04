@@ -2,10 +2,12 @@ package br.ufrn.kmeans;
 
 import br.ufrn.point.Point;
 import br.ufrn.point.SequentialPoint;
+import br.ufrn.util.CreatePointInterface;
 
 public class SequentialKmeans extends Kmeans {
 
-    public SequentialKmeans() {
+    public SequentialKmeans(CreatePointInterface createPointInterface) {
+        super(createPointInterface);
     }
 
     /*
@@ -26,7 +28,7 @@ public class SequentialKmeans extends Kmeans {
     protected void updateCentroids(Point[] points) {
         // reseting the centroidsSequentialPoint
         for (int i = 0; i < centroids.length; ++i) {
-            centroids[i] = new SequentialPoint(new double[points[0].getDim()]);
+            centroids[i] = createPointInterface.createPoint(new double[points[0].getDim()]);
         }
 
         // array for counting num of points associated to each class
