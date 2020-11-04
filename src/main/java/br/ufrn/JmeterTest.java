@@ -1,16 +1,20 @@
 package br.ufrn;
 
+import br.ufrn.io.CSVReader;
 import br.ufrn.io.CSVReaderStringBuilder;
 import br.ufrn.kmeans.Kmeans;
 import br.ufrn.kmeans.ParallelKmeans;
 import br.ufrn.kmeans.SequentialKmeans;
 import br.ufrn.point.Point;
 import br.ufrn.point.SequentialPoint;
+import br.ufrn.util.CreatePointInterface;
+import br.ufrn.util.InitHelper;
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.java.sampler.AbstractJavaSamplerClient;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.SampleResult;
 
+import java.io.IOException;
 import java.io.Serializable;
 
 
@@ -24,7 +28,9 @@ public class JmeterTest extends AbstractJavaSamplerClient implements Serializabl
         defaultParameters.addArgument("NumberOfIterations", "10");
         defaultParameters.addArgument("K", "3");
         defaultParameters.addArgument("InputFile", "input.csv");
-        defaultParameters.addArgument("IsParallel", "false");
+        defaultParameters.addArgument("reading", "no");
+        defaultParameters.addArgument("point", "seq");
+        defaultParameters.addArgument("algorithm", "seq");
         return defaultParameters;
     }
 
@@ -34,32 +40,28 @@ public class JmeterTest extends AbstractJavaSamplerClient implements Serializabl
         String numberOfIterationsStr = context.getParameter("NumberOfIterations");
         String KStr = context.getParameter("K");
         String inputFile = context.getParameter("InputFile");
-        String isParallelStr = context.getParameter("IsParallel");
+        String readingMech = context.getParameter("reading");
+        String point = context.getParameter("point");
+        String algorithm = context.getParameter("algorithm");
 
-        int numberOfThreads = Runtime.getRuntime().availableProcessors();
+
+
         int numberOfIterations = Integer.parseInt(numberOfIterationsStr);
         int K = Integer.parseInt(KStr);
-        boolean isParallel = Boolean.parseBoolean(isParallelStr);
 
         SampleResult result = new SampleResult();
         result.sampleStart(); // start stopwatch
 
         try {
-            CSVReaderStringBuilder csvReader = new CSVReaderStringBuilder(";");
-            Point[] seqPoints = csvReader.readCoords(inputFile, isParallel, SequentialPoint::new);
+            CSVReader csvReader = InitHelper.getReader(readingMech);
+            CreatePointInterface createPointInterface = InitHelper.getInterface(point);
+            boolean isParallel = !(algorithm.equals("seq"));
+            Point[] points = csvReader.readCoords(inputFile, isParallel, createPointInterface);
+            Kmeans kmeans = InitHelper.getKmeans(algorithm, createPointInterface);
 
-//            SequentialPoint seqPoints[] = new SequentialPoint[coords.length];
-//            for(int i = 0; i < coords.length; ++i){
-//                seqPoints[i] = new SequentialPoint(coords[i]);
-//            }
+            System.out.println("Starting Main. Number of points: " + points.length + "; Dim: " + points[0].getDim());
 
-            System.out.println("Starting Main. Number of points: " + seqPoints.length + "; Dim: " + seqPoints[0].getDim());
-
-            Kmeans kmeans;
-            if (isParallel) kmeans = new ParallelKmeans(numberOfThreads);
-            else kmeans = new SequentialKmeans();
-
-            kmeans.run(seqPoints, K, numberOfIterations);
+            kmeans.run(points, K, numberOfIterations);
 
 
             result.sampleEnd(); // stop stopwatch
