@@ -22,6 +22,7 @@ public class Main {
         Option readingMechOpt = new Option("r", "reading", true, "File reading mechanism");
         Option algorithmOpt = new Option("a", "algorithm", true, "Algorithm execution mode");
         Option pointOpt = new Option("p", "point", true, "Point execution mode");
+        Option printOutput = new Option("o", "output", false, "Print output");
 
 
         inputOpt.setRequired(true);
@@ -30,6 +31,7 @@ public class Main {
         algorithmOpt.setRequired(true);
         pointOpt.setRequired(true);
         readingMechOpt.setRequired(true);
+        printOutput.setRequired(true);
 
         options.addOption(inputOpt);
         options.addOption(KOpt);
@@ -37,6 +39,7 @@ public class Main {
         options.addOption(algorithmOpt);
         options.addOption(pointOpt);
         options.addOption(readingMechOpt);
+        options.addOption(printOutput);
 
         return options;
     }
@@ -65,6 +68,7 @@ public class Main {
         String point = cmd.getOptionValue("point");
         int numIters = Integer.parseInt(cmd.getOptionValue("iterations"));
         String readingMech = cmd.getOptionValue("reading");
+        String printOutput = cmd.getOptionValue("output");
 
         CSVReader csvReader = InitHelper.getReader(readingMech);
         CreatePointInterface createPointInterface = InitHelper.getInterface(point);
@@ -74,8 +78,11 @@ public class Main {
 
         System.out.println("Starting. Number of points: " + points.length + "; Dim: " + points[0].getDim());
         int[] classes = kmeans.run(points, K, numIters);
-        for(int i = 0; i < classes.length; ++i){
-            System.out.println(classes[i]);
+
+        if(printOutput.equals("true")){
+            for (int aClass : classes) {
+                System.out.println(aClass);
+            }
         }
     }
 }
